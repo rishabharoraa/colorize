@@ -46,7 +46,9 @@ function ImageForm() {
 			if(ValidTypes.includes(image.type)) {
 
 				setImageURL(prev => {return URL.createObjectURL(image)});
-				console.log(await toBase64(image));
+				//this should be an API call
+				let src = await toBase64(image);
+				// send an API request with src as body
 
 			} else {
 				alert('Please upload an image with valid filetype (.jpg, .jpeg, .png).');
