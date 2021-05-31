@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+const axios = require('axios').default;
 
 const toBase64 = (file) => new Promise(res => {
 	const reader = new FileReader();
@@ -11,8 +12,9 @@ function ImageForm() {
 
 	const [image, setImage] = useState(null);
 	const [imageURL, setImageURL] = useState(null);
-	const [imagePreviewTag, setImagePreviewTag] = useState(<></>);
-	const [imagePalette, setImagePalette] = useState(<></>);
+	const [imagePreviewTag, setImagePreviewTag] = useState(null);
+	const [imagePalette, setImagePalette] = useState(null);
+	const [colorPalette, setColorPalette] = useState(null);
 
 	const ValidTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 
@@ -21,20 +23,27 @@ function ImageForm() {
 			setImagePreviewTag(
 				<img src={imageURL} alt="yikes" style={{ width: 500+'px', margin: 50+'px'}} />
 			)
+		}
+	}, [imageURL])
+
+	useEffect(() => {
+		if(colorPalette) {
 			setImagePalette(
 				<table border="1">
 					<tbody>
 					<tr>
-						<td>1</td>
-						<td>2</td>
-						<td>3</td>
-						<td>4</td>
+						{
+							colorPalette.map((element, index) => {
+								return (
+									<td key={index} style={{ backgroundColor: element, padding: 2+'em' }} ></td> 
+								)
+							})
+						}
 					</tr>
 					</tbody>
 				</table>
-			)
-		}
-	}, [imageURL])
+			)}
+	}, [colorPalette])
 
 	function handleChange(e) {
 		setImage(e.target.files[0]);
@@ -46,9 +55,20 @@ function ImageForm() {
 			if(ValidTypes.includes(image.type)) {
 
 				setImageURL(prev => {return URL.createObjectURL(image)});
-				//this should be an API call
 				let src = await toBase64(image);
-				// send an API request with src as body
+				// send a post req with src in body as {body: src}
+				// after getting a reply with palette, the useEffect func will trigger the display
+				// parse reply and store on colorPalette using setColorPalette  
+				axios.post('http://localhost:5000/api', {
+					body: src
+				})
+				.then((response) => {
+					console.log(response.data);
+					setColorPalette(response.data);
+				}, (error) => {
+					console.log(error);
+				})
+
 
 			} else {
 				alert('Please upload an image with valid filetype (.jpg, .jpeg, .png).');
