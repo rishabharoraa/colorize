@@ -1,16 +1,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const colorThief = require('colorthief');
-const cors = require('cors');
+const fs = require('fs');
+const { v4:uuidv4 } = require('uuid');
 
 const app = express();
 const port = 5000;
 const router = express.Router();
 
-// TODO: make cors more restrictive and find non-deprecated version
-app.use(cors());
+//CORS middleware
+var corsMiddleware = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*'); //replace * with actual host
+  res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
+
+  next();
+}
+
 app.use(bodyParser.urlencoded( { extended: false } ));
-app.use(bodyParser.json( {limit: '50MB'} ));
+app.use(bodyParser.json( { limit: '10MB' } ));
+app.use(corsMiddleware);
+
 
 // save the image so it can be sent to colorThief as a param (can this be done better??)
 const saveImage = (imgData, path) => {
@@ -30,7 +40,7 @@ function convertToHexColorValues(data) {
     let temp = '#';
     element.forEach(val => {
       hex = val.toString(16);
-      temp += hex.element === 1 ? '0' + hex : hex;
+      temp += hex.length === 1 ? '0' + hex : hex;
     });
     res.push(temp);
   });
@@ -41,15 +51,18 @@ function convertToHexColorValues(data) {
 // generate image palette from image path
 function getColorPalette(path) { 
   // take image in b64 and convert
-  return  colorThief.getPalette(path, 8);
+  return  colorThief.getPalette(path, 12, 1);
 }
 
 router.post('/', async (req,res) => {
+
+  // parsing input and creating path for later use
+  console.log("Got a req!!!!");
   let data = req.body.data;
-  // TODO: 
-  // let type = req.body.type;
-  // make uuid
-  // path = './'+uuid+type
+  let type = req.body.type;
+  let path = './' + uuidv4() + '.' + type;
+  console.log(path);
+
 
   // save image
   saveImage(data, path).then(async () => {
@@ -58,7 +71,7 @@ router.post('/', async (req,res) => {
     // send image palette
     res.send(convertToHexColorValues(a));
     // delete image
-    false.unlink(path, (err) => {
+    fs.unlink(path, (err) => {
       if(err) {
         console.error(err);
         return;
