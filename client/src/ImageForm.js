@@ -56,13 +56,17 @@ function ImageForm() {
 
 				setImageURL(prev => {return URL.createObjectURL(image)});
 				let src = await toBase64(image);
+				let type = image.type;
+				type = type.split('image/').pop();
 				// send a post req with src in body as {body: src}
 				// after getting a reply with palette, the useEffect func will trigger the display
 				// parse reply and store on colorPalette using setColorPalette  
 				axios.post('http://localhost:5000/api', {
-					body: src
+					'data': src,
+					'type': type 
 				})
 				.then((response) => {
+					console.log('got response!!');
 					console.log(response.data);
 					setColorPalette(response.data);
 				}, (error) => {
