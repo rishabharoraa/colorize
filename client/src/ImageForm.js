@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import './ImageForm.css';
 const axios = require('axios').default;
 
 const toBase64 = (file) => new Promise(res => {
@@ -21,7 +22,7 @@ function ImageForm() {
 	useEffect(() => {
 		if(imageURL) {
 			setImagePreviewTag(
-				<img src={imageURL} alt="yikes" style={{ width: 500+'px', margin: 50+'px'}} />
+				<img src={imageURL} alt="yikes" style={{ width: 50+'%'}} />
 			)
 		}
 	}, [imageURL])
@@ -29,13 +30,13 @@ function ImageForm() {
 	useEffect(() => {
 		if(colorPalette) {
 			setImagePalette(
-				<table border="1">
+				<table style={{border: '3px solid white', borderCollapse: 'collapse'}}>
 					<tbody>
 					<tr>
 						{
 							colorPalette.map((element, index) => {
 								return (
-									<td key={index} style={{ backgroundColor: element, padding: 2+'em' }} ></td> 
+									<td key={index} style={{ backgroundColor: element, width: 4+'em', height: 6+'em'}} ></td>
 								)
 							})
 						}
@@ -47,7 +48,7 @@ function ImageForm() {
 
 	function handleChange(e) {
 		setImage(e.target.files[0]);
-	}	
+	}
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -60,10 +61,10 @@ function ImageForm() {
 				type = type.split('image/').pop();
 				// send a post req with src in body as {body: src}
 				// after getting a reply with palette, the useEffect func will trigger the display
-				// parse reply and store on colorPalette using setColorPalette  
+				// parse reply and store on colorPalette using setColorPalette
 				axios.post('http://localhost:5000/api', {
 					'data': src,
-					'type': type 
+					'type': type
 				})
 				.then((response) => {
 					console.log('got response!!');
@@ -84,15 +85,18 @@ function ImageForm() {
 
 	return (
 		<>
+		<h1 style={{fontSize: 3.5+'em', marginBottom: 0+'px'}}> Colorize </h1>
+		<h2 style={{fontSize: 2+'em', marginTop: 10+'px'}}> Color Palette Generator </h2>
+		<hr color='white' height='1' />
 		<form onSubmit={handleSubmit}>
-			<input type="file" onChange={handleChange}/>
-			<input type="submit" value="process" />
+			<input type="file" onChange={handleChange} style={{fontSize: 1.5+'em'}}/>
+			<input type="submit" value="Process..." style={{fontSize: 1.5+'em', color: 'black'}}/>
 		</form>
 		{imagePreviewTag}
 		{imagePalette}
 		</>
 	)
-	
+
 }
 
 export default ImageForm;
