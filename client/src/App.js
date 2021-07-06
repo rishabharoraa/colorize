@@ -1,4 +1,5 @@
 import ImageForm from './ImageForm';
+import styles from './App.css';
 
 function App() {
   return (
