@@ -1,0 +1,18 @@
+* {
+  color: white;
+}
+
+h1,h2, p,form, img, table {
+  margin: 25px;
+}
+
+
+
+hr {
+  margin: 30px;
+  margin-bottom: 50px;
+  width: 60%;
+  border: none;
+  background-color: white;
+  height: 1px;
+}
