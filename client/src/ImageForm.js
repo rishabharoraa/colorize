@@ -19,6 +19,7 @@ function ImageForm() {
 
 	const ValidTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 
+	// show the uploaded image, if an uploaded image exists.
 	useEffect(() => {
 		if(imageURL) {
 			setImagePreviewTag(
@@ -27,6 +28,7 @@ function ImageForm() {
 		}
 	}, [imageURL])
 
+	// show the color palette, of exists.
 	useEffect(() => {
 		if(colorPalette) {
 			setImagePalette(
@@ -50,11 +52,14 @@ function ImageForm() {
 		setImage(e.target.files[0]);
 	}
 
+	// this function is invoked when submit is clicked
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if(image) {
+			// check for valid file type
 			if(ValidTypes.includes(image.type)) {
 
+				//convert image to base64
 				setImageURL(prev => {return URL.createObjectURL(image)});
 				let src = await toBase64(image);
 				let type = image.type;
