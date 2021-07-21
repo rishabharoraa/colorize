@@ -23,7 +23,7 @@ function ImageForm() {
 	useEffect(() => {
 		if(imageURL) {
 			setImagePreviewTag(
-				<img src={imageURL} alt="yikes" style={{ width: 50+'%'}} />
+				<img src={imageURL} alt="yikes" style={{ height: 25+'em'}} />
 			)
 		}
 	}, [imageURL])
